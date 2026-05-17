@@ -51,12 +51,21 @@ public class APIClient {
                 .response();
     }
 
-    public Response getBooking() {
+    public Response getBookingIds() {
         return getRequestSpec()
                 .when()
                 .get(APIEndpoints.BOOKING.getPath())
                 .then()
                 .statusCode(200)
+                .extract()
+                .response();
+    }
+
+    public Response getBookingById(int bookingId) {
+        return getRequestSpec()
+                .when()
+                .get(APIEndpoints.BOOKING.getPath() + "/" + bookingId)
+                .then()
                 .extract()
                 .response();
     }

@@ -23,7 +23,7 @@ public class GetBookingIdsTests {
 
     @Test
     public void testGetBookingIds() {
-        Response response = apiClient.getBooking();
+        Response response = apiClient.getBookingIds();
         assertThat(response.getStatusCode()).isEqualTo(200);
 
         String responseBody = response.getBody().asString();
@@ -34,8 +34,5 @@ public class GetBookingIdsTests {
         for(BookingId bookingId : bookingIds) {
             assertThat(bookingId.getBookingId()).isGreaterThan(0);
         }
-
-
     }
-
 }
