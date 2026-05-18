@@ -2,7 +2,11 @@ package core.clients;
 
 import core.settings.APIEndpoints;
 import io.restassured.RestAssured;
+import io.restassured.filter.Filter;
+import io.restassured.filter.FilterContext;
 import io.restassured.response.Response;
+import io.restassured.specification.FilterableRequestSpecification;
+import io.restassured.specification.FilterableResponseSpecification;
 import io.restassured.specification.RequestSpecification;
 
 import java.io.IOException;
@@ -12,12 +16,25 @@ import java.util.Properties;
 public class APIClient {
 
     private final String baseURL;
+    private String token;
+    private String admin_username;
+    private String admin_password;
 
-    public APIClient() {
-        this.baseURL = determineBaseURL();
+    public String getAdmin_username() {
+        return admin_username;
     }
 
-    private String determineBaseURL() {
+    public String getAdmin_password() {
+        return admin_password;
+    }
+
+    public APIClient() {
+        this.baseURL = takeProperty("baseURL");
+        this.admin_username = takeProperty("admin_username");
+        this.admin_password = takeProperty("admin_password");
+    }
+
+    private String takeProperty(String propertyName) {
         String environment = System.getProperty("env", "test");
         String configFileName = "application-" + environment + ".properties";
 
@@ -31,14 +48,40 @@ public class APIClient {
             throw new IllegalStateException("Unable to load file: " + configFileName, e);
         }
 
-        return properties.getProperty("baseURL");
+        return properties.getProperty(propertyName);
     }
 
     private RequestSpecification getRequestSpec() {
         return RestAssured.given()
                 .baseUri(baseURL)
                 .header("Content-Type", "application/json")
-                .header("Accept", "application/json");
+                .header("Accept", "application/json")
+                .filter(addAuthTokenFilter());
+    }
+
+    public void createToken(String username, String password) {
+        String requestBody = String.format("{ \"username\": \"%s\", \"password\": \"%s\" }", username, password);
+
+        Response response = getRequestSpec()
+                .body(requestBody)
+                .when()
+                .post(APIEndpoints.AUTH.getPath())
+                .then()
+                .log().body()
+                .statusCode(200)
+                .extract()
+                .response();
+
+        token = response.jsonPath().getString("token");
+    }
+
+    private Filter addAuthTokenFilter() {
+        return (FilterableRequestSpecification requestSpec, FilterableResponseSpecification responseSpec, FilterContext context) -> {
+            if (token != null) {
+                requestSpec.header("Cookie", "token=" + token);
+            }
+            return context.next(requestSpec, responseSpec);
+        };
     }
 
     public Response ping() {
@@ -56,7 +99,7 @@ public class APIClient {
                 .when()
                 .get(APIEndpoints.BOOKING.getPath())
                 .then()
-                .statusCode(200)
+                .log().body()
                 .extract()
                 .response();
     }
@@ -66,6 +109,17 @@ public class APIClient {
                 .pathParam("id", bookingId)
                 .when()
                 .get(APIEndpoints.BOOKING.getPath() + "/{id}")
+                .then()
+                .log().body()
+                .extract()
+                .response();
+    }
+
+    public Response deleteBookingById(int bookingId) {
+        return getRequestSpec()
+                .pathParam("id", bookingId)
+                .when()
+                .delete(APIEndpoints.BOOKING.getPath() + "/{id}")
                 .then()
                 .log().body()
                 .extract()
