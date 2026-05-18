@@ -13,9 +13,9 @@ public class GetBookingTests {
 
     private APIClient apiClient;
     private ObjectMapper objectMapper;
-    private final int bookingId = 1;
-    private final Booking expectedBooking = new Booking("James", "Brown", 111, true,
-            new BookingDates("2018-01-01","2019-01-01"), "Breakfast");
+    private final int bookingId = 2;
+    private final Booking expectedBooking = new Booking("Mark", "Ericsson", 837, true,
+            new BookingDates("2023-04-27","2025-07-17"), null);
 
     @BeforeEach
     public void setup() {

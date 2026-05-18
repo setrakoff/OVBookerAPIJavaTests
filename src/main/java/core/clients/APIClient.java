@@ -63,9 +63,11 @@ public class APIClient {
 
     public Response getBookingById(int bookingId) {
         return getRequestSpec()
+                .pathParam("id", bookingId)
                 .when()
-                .get(APIEndpoints.BOOKING.getPath() + "/" + bookingId)
+                .get(APIEndpoints.BOOKING.getPath() + "/{id}")
                 .then()
+                .log().body()
                 .extract()
                 .response();
     }
