@@ -1,6 +1,7 @@
 import core.clients.APIClient;
 import core.models.BookingId;
 import io.restassured.response.Response;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import tools.jackson.core.type.TypeReference;
@@ -10,15 +11,13 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class GetBookingIdsTests {
-
-    private APIClient apiClient;
-    private ObjectMapper objectMapper;
+public class GetBookingIdsTests extends MainTest {
 
     @BeforeEach
     public void setup() {
         apiClient = new APIClient();
         objectMapper = new ObjectMapper();
+        createNewBooking();
     }
 
     @Test
@@ -35,4 +34,10 @@ public class GetBookingIdsTests {
             assertThat(bookingId.getBookingId()).isGreaterThan(0);
         }
     }
+
+    @AfterEach
+    public void tearDown() {
+        deleteCreatedBooking();
+    }
+
 }

@@ -17,8 +17,8 @@ public class APIClient {
 
     private final String baseURL;
     private String token;
-    private String admin_username;
-    private String admin_password;
+    private final String admin_username;
+    private final String admin_password;
 
     public String getAdmin_username() {
         return admin_username;
@@ -120,6 +120,18 @@ public class APIClient {
                 .pathParam("id", bookingId)
                 .when()
                 .delete(APIEndpoints.BOOKING.getPath() + "/{id}")
+                .then()
+                .log().body()
+                .extract()
+                .response();
+    }
+
+    public Response createBooking(String body) {
+        return getRequestSpec()
+                .body(body)
+                .when()
+                .log().body()
+                .post(APIEndpoints.BOOKING.getPath())
                 .then()
                 .log().body()
                 .extract()
