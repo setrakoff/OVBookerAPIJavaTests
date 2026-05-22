@@ -150,4 +150,17 @@ public class APIClient {
                 .extract()
                 .response();
     }
+
+    public Response partitialUpdateBooking(int bookingId, String body) {
+        return getRequestSpec()
+                .pathParam("id", bookingId)
+                .body(body)
+                .when()
+                .log().body()
+                .patch(APIEndpoints.BOOKING.getPath() + "/{id}")
+                .then()
+                .log().body()
+                .extract()
+                .response();
+    }
 }

@@ -30,6 +30,16 @@ public class Booking {
         this.additionalNeeds = additionalNeeds;
     }
 
+    // Clone:
+    public Booking(Booking booking) {
+        this.firstName = booking.getFirstName();
+        this.lastName = booking.getLastName();
+        this.totalPrice = booking.getTotalPrice();
+        this.depositPaid = booking.isDepositPaid();
+        this.bookingDates = new BookingDates(booking.getBookingDates());
+        this.additionalNeeds = booking.getAdditionalNeeds();
+    }
+
     public String getFirstName() {
         return firstName;
     }

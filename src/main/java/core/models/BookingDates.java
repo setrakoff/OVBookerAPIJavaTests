@@ -18,6 +18,12 @@ public class BookingDates {
         this.checkout = checkout;
     }
 
+    //Clone
+    public BookingDates(BookingDates bookingDates) {
+        this.checkin = bookingDates.getCheckin();
+        this.checkout = bookingDates.getCheckout();
+    }
+
     public String getCheckin() {
         return checkin;
     }
