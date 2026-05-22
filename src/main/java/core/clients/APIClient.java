@@ -151,7 +151,7 @@ public class APIClient {
                 .response();
     }
 
-    public Response partitialUpdateBooking(int bookingId, String body) {
+    public Response partialUpdateBooking(int bookingId, String body) {
         return getRequestSpec()
                 .pathParam("id", bookingId)
                 .body(body)
