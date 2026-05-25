@@ -1,5 +1,6 @@
 package core.clients;
 
+import com.sun.net.httpserver.Request;
 import core.settings.APIEndpoints;
 import io.restassured.RestAssured;
 import io.restassured.filter.Filter;
@@ -11,14 +12,15 @@ import io.restassured.specification.RequestSpecification;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Map;
 import java.util.Properties;
 
 public class APIClient {
 
     private final String baseURL;
     private String token;
-    private String admin_username;
-    private String admin_password;
+    private final String admin_username;
+    private final String admin_password;
 
     public String getAdmin_username() {
         return admin_username;
@@ -95,7 +97,17 @@ public class APIClient {
     }
 
     public Response getBookingIds() {
-        return getRequestSpec()
+        return getBookingIds(null);
+    }
+
+    public Response getBookingIds(Map<String, String> filters) {
+        RequestSpecification spec = getRequestSpec();
+
+        if(filters != null && !filters.isEmpty()) {
+            spec.queryParams(filters);
+        }
+
+        return spec
                 .when()
                 .get(APIEndpoints.BOOKING.getPath())
                 .then()
@@ -120,6 +132,44 @@ public class APIClient {
                 .pathParam("id", bookingId)
                 .when()
                 .delete(APIEndpoints.BOOKING.getPath() + "/{id}")
+                .then()
+                .log().body()
+                .extract()
+                .response();
+    }
+
+    public Response createBooking(String body) {
+        return getRequestSpec()
+                .body(body)
+                .when()
+                //.log().body()
+                .post(APIEndpoints.BOOKING.getPath())
+                .then()
+                .log().body()
+                .extract()
+                .response();
+    }
+
+    public Response updateBooking(int bookingId, String body) {
+        return getRequestSpec()
+                .pathParam("id", bookingId)
+                .body(body)
+                .when()
+                .log().body()
+                .put(APIEndpoints.BOOKING.getPath() + "/{id}")
+                .then()
+                .log().body()
+                .extract()
+                .response();
+    }
+
+    public Response partialUpdateBooking(int bookingId, String body) {
+        return getRequestSpec()
+                .pathParam("id", bookingId)
+                .body(body)
+                .when()
+                .log().body()
+                .patch(APIEndpoints.BOOKING.getPath() + "/{id}")
                 .then()
                 .log().body()
                 .extract()

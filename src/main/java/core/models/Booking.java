@@ -3,7 +3,10 @@ package core.models;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import tools.jackson.databind.PropertyNamingStrategies;
+import tools.jackson.databind.annotation.JsonNaming;
 
+@JsonNaming(PropertyNamingStrategies.LowerCaseStrategy.class)
 public class Booking {
     private String firstName;
     private String lastName;
@@ -25,6 +28,16 @@ public class Booking {
         this.depositPaid = depositPaid;
         this.bookingDates = bookingDates;
         this.additionalNeeds = additionalNeeds;
+    }
+
+    // Clone:
+    public Booking(Booking booking) {
+        this.firstName = booking.getFirstName();
+        this.lastName = booking.getLastName();
+        this.totalPrice = booking.getTotalPrice();
+        this.depositPaid = booking.isDepositPaid();
+        this.bookingDates = new BookingDates(booking.getBookingDates());
+        this.additionalNeeds = booking.getAdditionalNeeds();
     }
 
     public String getFirstName() {

@@ -3,7 +3,10 @@ package core.models;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import tools.jackson.databind.PropertyNamingStrategies;
+import tools.jackson.databind.annotation.JsonNaming;
 
+@JsonNaming(PropertyNamingStrategies.LowerCaseStrategy.class)
 public class BookingDates {
     private String checkin;
     private String checkout;
@@ -13,6 +16,12 @@ public class BookingDates {
                         @JsonProperty("checkout") String checkout) {
         this.checkin = checkin;
         this.checkout = checkout;
+    }
+
+    //Clone
+    public BookingDates(BookingDates bookingDates) {
+        this.checkin = bookingDates.getCheckin();
+        this.checkout = bookingDates.getCheckout();
     }
 
     public String getCheckin() {
