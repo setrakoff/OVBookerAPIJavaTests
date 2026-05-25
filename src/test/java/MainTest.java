@@ -21,16 +21,22 @@ public class MainTest {
 
 
     protected List<BookingId> getBookingIds() {
-        Response response = apiClient.getBookingIds();
+        return getBookingIds(apiClient.getBookingIds());
+    }
+
+    protected List<BookingId> getBookingIds(Response response) {
         String responseBody = response.getBody().asString();
         return objectMapper.readValue(responseBody, new TypeReference<List<BookingId>>() {});
     }
 
     protected void createNewBooking() {
-        Response response = apiClient.createBooking(objectMapper.writeValueAsString(newBooking));
+        createdBookingId = createNewBooking(newBooking);
+    }
+    protected Integer createNewBooking(Booking booking) {
+        Response response = apiClient.createBooking(objectMapper.writeValueAsString(booking));
         String responseBody = response.getBody().asString();
         CreatedBooking createdBooking = objectMapper.readValue(responseBody, new TypeReference<CreatedBooking>() {});
-        createdBookingId = createdBooking.getBookingId();
+        return createdBooking.getBookingId();
     }
 
     protected void deleteCreatedBooking() {

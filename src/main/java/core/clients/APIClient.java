@@ -1,5 +1,6 @@
 package core.clients;
 
+import com.sun.net.httpserver.Request;
 import core.settings.APIEndpoints;
 import io.restassured.RestAssured;
 import io.restassured.filter.Filter;
@@ -11,6 +12,7 @@ import io.restassured.specification.RequestSpecification;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Map;
 import java.util.Properties;
 
 public class APIClient {
@@ -95,7 +97,17 @@ public class APIClient {
     }
 
     public Response getBookingIds() {
-        return getRequestSpec()
+        return getBookingIds(null);
+    }
+
+    public Response getBookingIds(Map<String, String> filters) {
+        RequestSpecification spec = getRequestSpec();
+
+        if(filters != null && !filters.isEmpty()) {
+            spec.queryParams(filters);
+        }
+
+        return spec
                 .when()
                 .get(APIEndpoints.BOOKING.getPath())
                 .then()
